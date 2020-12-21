@@ -54,9 +54,25 @@ public class UserServiceImp implements UserService {
     @Transactional
     @Override
     public void update(Long id, User updatedUser) {
-        if (userDao.getByName(updatedUser.getName()) == null) {
-            userDao.update(id, updatedUser);
+
+        while (true) {
+
+            User userGetById = userDao.getById(id);
+
+            if (updatedUser.getName().equals(userGetById.getName())) {
+                userDao.update(id, updatedUser);
+                break;
+            }
+
+            if (userDao.getByName(updatedUser.getName()) == null) {
+                userDao.update(id, updatedUser);
+                break;
+            }
+
+            if (userDao.getByName(updatedUser.getName()) != null) {
+                System.out.println("Duplicate name");
+                break;
+            }
         }
-        System.out.println("Duplicate name");
     }
 }
